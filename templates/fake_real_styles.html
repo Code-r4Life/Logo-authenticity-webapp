@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fake vs Real Logo Classifier</title>
+  <style>
+    /* General Layout */
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #141E30, #243B55);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Blob Backgrounds */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 0;
+    }
+    .blob1 {
+      width: 400px;
+      height: 400px;
+      background: #ffcc70;
+      top: -100px;
+      left: -100px;
+    }
+    .blob2 {
+      width: 500px;
+      height: 500px;
+      background: #4cafef;
+      bottom: -150px;
+      right: -150px;
+    }
+
+    /* Flex Layout */
+    .layout {
+      display: flex;
+      gap: 25px;
+      align-items: flex-start;
+      z-index: 1;
+      max-width: 1200px;
+      width: 100%;
+      padding: 20px;
+    }
+
+    /* Side Cards */
+    .side-card {
+      flex: 1;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      text-align: center;
+    }
+    .side-card h2 {
+      color: #ffcc70;
+      margin-bottom: 15px;
+    }
+    .side-card ul {
+      list-style: none;
+      padding: 0;
+      text-align: left;
+    }
+    .side-card ul li {
+      margin: 8px 0;
+      font-weight: 500;
+    }
+    #feature-list {
+      list-style: none;
+      padding: 0;
+      text-align: center
+    }
+
+    /* Center Main Container */
+    .container {
+      flex: 2;
+      padding: 25px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    /* Heading */
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: #ffcc70;
+    }
+
+    /* Upload */
+    .upload-label {
+      display: inline-block;
+      padding: 12px 20px;
+      background: #ffcc70;
+      color: #222;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    .upload-label:hover {
+      background: #ffb347;
+    }
+
+    /* Preview */
+    .preview-container {
+      margin: 20px auto;
+    }
+    .preview-container img {
+      max-width: 100%;
+      max-height: 250px;
+      border-radius: 12px;
+      border: 2px solid #ffcc70;
+      margin-top: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    /* Buttons */
+    .button-group {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.3s ease;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    .predict-btn {
+      background: #4CAF50;
+      color: #fff;
+    }
+    .predict-btn:hover {
+      background: #45a049;
+    }
+    .clear-btn {
+      background: #f44336;
+      color: #fff;
+    }
+    .clear-btn:hover {
+      background: #e53935;
+    }
+
+    /* Result Card */
+    .result-card {
+      margin-top: 30px;
+      padding: 20px;
+      background: rgba(255, 204, 112, 0.15);
+      border: 2px solid #ffcc70;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    }
+    .result-card h2 {
+      margin-bottom: 10px;
+      color: #ffcc70;
+    }
+    .result-card p {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    /* Supported Logos */
+    .logos {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .logos img {
+      width: 60px;
+      height: auto;
+      background: #fff;
+      border-radius: 8px;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Blobs -->
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+
+  <div class="layout">
+    <!-- Left Features -->
+    <div class="side-card">
+      <h2>Features</h2>
+      <ul>
+        <li id="feature-list">Real-time logo classification</li>
+        <li id="feature-list">Supports multiple brands</li>
+        <li id="feature-list">Clean preview & results</li>
+        <li id="feature-list">Modern, responsive UI</li>
+      </ul>
+    </div>
+
+    <!-- Center Classifier -->
+    <div class="container">
+      <h1>Fake vs Real Logo Classifier</h1>
+
+      <form method="POST" enctype="multipart/form-data" id="uploadForm">
+        <label for="fileInput" class="upload-label">Choose a Logo</label>
+        <input type="file" name="image" id="fileInput" accept="image/*" required hidden>
+
+        <div id="preview" class="preview-container">
+          {% if image_url %}
+          <img src="{{ image_url }}" alt="Uploaded Logo">
+          {% endif %}
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn predict-btn">Predict</button>
+          <button type="button" id="clearBtn" class="btn clear-btn">Clear</button>
+        </div>
+      </form>
+
+      {% if prediction %}
+      <div class="result-card">
+        <h2>Prediction</h2>
+        <p>{{ prediction }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Right Supported Logos -->
+    <div class="side-card">
+      <h2>Supported Logos</h2>
+      <div class="logos">
+        <img src="../static/Adidas_Logo.svg" alt="Adidas">
+        <img src="../static/Gucci_Logo.png" alt="Gucci">
+        <img src="../static/Nike_Logo.svg" alt="Nike">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const fileInput = document.getElementById("fileInput");
+      const preview = document.getElementById("preview");
+      const clearBtn = document.getElementById("clearBtn");
+      const resultCard = document.querySelector(".result-card");
+
+      // Show preview
+      fileInput.addEventListener("change", () => {
+        preview.innerHTML = "";
+        const file = fileInput.files[0];
+        if (file) {
+          const img = document.createElement("img");
+          img.src = URL.createObjectURL(file);
+          preview.appendChild(img);
+        }
+      });
+
+      // Clear button
+      clearBtn.addEventListener("click", () => {
+        fileInput.value = "";
+        preview.innerHTML = "";
+        if (resultCard) {
+          resultCard.remove();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
