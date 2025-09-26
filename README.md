@@ -75,6 +75,9 @@ Edit
 python app.py
 ```
 
-## 📬 Interested in a Similar Project? I build smart, ML-integrated applications and responsive web platforms. Let’s build something powerful together!
+## 📬 Interested in a Similar Project? 
+
+I build smart, ML-integrated applications and responsive web platforms. Let’s build something powerful together!
+
 - 📧 shinjansaha00@gmail.com
 - 🔗 [LinkedIn Profile](https://www.linkedin.com/in/shinjan-saha-1bb744319/)
